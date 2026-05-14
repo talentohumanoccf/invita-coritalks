@@ -61,11 +61,11 @@
         <!-- Left Side: Event Details & Poster -->
         <div class="relative min-h-[550px] sm:min-h-[650px] lg:min-h-full bg-navy flex items-center justify-center p-4 lg:p-8 overflow-hidden">
             <!-- Blurred Backdrop (Glass Effect) -->
-            <img src="https://i.imgur.com/w6PSseb.png" class="absolute inset-0 w-full h-full object-cover blur-3xl opacity-40 scale-110 z-0">
+            <img src="https://i.imgur.com/nkMoMOF.png" class="absolute inset-0 w-full h-full object-cover blur-3xl opacity-40 scale-110 z-0">
             <div class="absolute inset-0 bg-gradient-to-t from-navy via-navy/40 to-transparent z-10"></div>
             
             <!-- Main Poster (Uncropped) -->
-            <img src="https://i.imgur.com/w6PSseb.png" alt="Fabian Moreno Calderón" class="relative z-20 w-full h-full max-h-[80vh] object-contain drop-shadow-[0_0_30px_rgba(0,163,224,0.3)] rounded-2xl">
+            <img src="https://i.imgur.com/nkMoMOF.png" alt="Fabian Moreno Calderón" class="relative z-20 w-full h-full max-h-[80vh] object-contain drop-shadow-[0_0_30px_rgba(0,163,224,0.3)] rounded-2xl">
             
             <!-- Interactive Bottom Overlay -->
             <div class="absolute inset-x-0 bottom-0 z-30 p-6 pt-32 flex flex-col justify-end items-center gap-4 bg-gradient-to-t from-navy via-navy/95 to-transparent pointer-events-none">
@@ -185,6 +185,7 @@
                     </div>
                     <h3 class="text-3xl font-bold text-white mb-3">Ocurrió un error</h3>
                     <p class="text-slate text-lg">No pudimos procesar tu registro. Por favor, inténtalo de nuevo más tarde.</p>
+                    <p id="error-description" class="text-red-400 text-sm mt-4 bg-red-500/10 p-3 rounded-lg hidden font-mono break-words"></p>
                 </div>
                 
                 <button onclick="window.location.reload()" class="mt-10 px-6 py-3 rounded-xl border border-white/20 text-white hover:bg-white/5 transition-colors inline-flex items-center gap-2 font-medium">
@@ -256,6 +257,11 @@
                         document.getElementById('duplicate-message').classList.remove('hidden');
                     } else {
                         document.getElementById('error-message').classList.remove('hidden');
+                        const errorDesc = document.getElementById('error-description');
+                        if (errorDesc) {
+                            errorDesc.innerText = data.trim();
+                            errorDesc.classList.remove('hidden');
+                        }
                     }
                 })
                 .catch(error => {
@@ -263,6 +269,11 @@
                     formContainer.classList.add('hidden');
                     messagesContainer.classList.remove('hidden');
                     document.getElementById('error-message').classList.remove('hidden');
+                    const errorDesc = document.getElementById('error-description');
+                    if (errorDesc) {
+                        errorDesc.innerText = "Error de conexión o CORS: " + error.toString();
+                        errorDesc.classList.remove('hidden');
+                    }
                 })
                 .finally(() => {
                     submitButton.disabled = false;
