@@ -52,6 +52,36 @@
             transform: translateY(-2px);
             filter: brightness(1.1);
         }
+
+        /* Star Rating Styles */
+        .star-rating {
+            display: flex;
+            flex-direction: row-reverse;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        .star-rating input { display: none; }
+        .star-rating label {
+            cursor: pointer;
+            width: 30px;
+            height: 30px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23475569' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolygon points='12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2'%3E%3C/polygon%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: contain;
+            transition: all 0.2s ease;
+        }
+        .star-rating label:hover,
+        .star-rating label:hover ~ label,
+        .star-rating input:checked ~ label {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='%23FF6700' stroke='%23FF6700' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolygon points='12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2'%3E%3C/polygon%3E%3C/svg%3E");
+            transform: scale(1.1);
+        }
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
     </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4 sm:p-8">
@@ -89,10 +119,16 @@
                     </button>
                     
                     <!-- Botón de YouTube visible en todas las pantallas -->
-                    <a href="https://youtube.com/live/TU_ENLACE_AQUI" target="_blank" id="youtube-link-desktop" class="w-full sm:w-2/3 lg:w-4/5 inline-flex items-center justify-center gap-2 bg-red-600/90 hover:bg-red-500 text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 border border-red-500/50 shadow-[0_4px_15px_rgba(220,38,38,0.3)] hover:scale-105">
+                    <a href="https://youtube.com/live/FKlGfiIYwhE?feature=share" target="_blank" id="youtube-link-desktop" class="w-full sm:w-2/3 lg:w-4/5 inline-flex items-center justify-center gap-2 bg-red-600/90 hover:bg-red-500 text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 border border-red-500/50 shadow-[0_4px_15px_rgba(220,38,38,0.3)] hover:scale-105">
                         <i data-lucide="youtube" class="w-5 h-5"></i>
                         Ver Transmisión en Vivo
                     </a>
+
+                    <!-- Botón de Encuesta -->
+                    <button onclick="openSurveyModal()" class="w-full sm:w-2/3 lg:w-4/5 inline-flex items-center justify-center gap-2 bg-brand-orange/20 hover:bg-brand-orange text-brand-orange hover:text-navy font-bold py-3 px-6 rounded-xl transition-all duration-300 border border-brand-orange/50 shadow-lg shadow-brand-orange/10 hover:scale-105">
+                        <i data-lucide="star" class="w-5 h-5"></i>
+                        Calificar Evento
+                    </button>
                 </div>
             </div>
 
@@ -206,6 +242,118 @@
             <p class="text-slate mb-6">La transmisión en vivo se habilitará el día del evento a la hora indicada.</p>
             <button onclick="closeYoutubeModal()" class="w-full btn-premium text-white font-bold py-3 px-6 rounded-xl transition-transform hover:scale-105">
                 Entendido
+            </button>
+        </div>
+    </div>
+
+    <!-- Satisfaction Survey Modal -->
+    <div id="surveyModal" class="fixed inset-0 bg-navy/95 z-[70] hidden flex items-center justify-center p-4 backdrop-blur-sm opacity-0 transition-opacity duration-300">
+        <div class="bg-light-navy rounded-3xl shadow-2xl w-full max-w-md relative transform scale-95 transition-transform duration-300 border border-brand-orange/20 p-8" id="surveyModalContent" onclick="event.stopPropagation()">
+            <button onclick="closeSurveyModal()" class="absolute -top-12 right-0 text-white hover:text-brand-orange transition-colors z-50">
+                <i data-lucide="x-circle" class="w-10 h-10"></i>
+            </button>
+            <div id="survey-form-container">
+                <div class="text-center mb-6">
+                    <h3 class="text-2xl font-black text-white">Tu opinión nos importa</h3>
+                    <p class="text-xs text-slate mt-1">Ayúdanos a mejorar CoriTalks</p>
+                </div>
+                <form id="survey-form" class="space-y-6">
+                    <div class="space-y-2">
+                        <label class="block text-[10px] font-bold text-center text-slate uppercase tracking-widest">¿Cómo calificarías al Speaker?</label>
+                        <div class="star-rating" id="rating-speaker">
+                            <input type="radio" id="s5" name="speaker" value="5" /><label for="s5"></label>
+                            <input type="radio" id="s4" name="speaker" value="4" /><label for="s4"></label>
+                            <input type="radio" id="s3" name="speaker" value="3" /><label for="s3"></label>
+                            <input type="radio" id="s2" name="speaker" value="2" /><label for="s2"></label>
+                            <input type="radio" id="s1" name="speaker" value="1" /><label for="s1"></label>
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="block text-[10px] font-bold text-center text-slate uppercase tracking-widest">¿Qué tal te pareció el lugar?</label>
+                        <div class="star-rating" id="rating-lugar">
+                            <input type="radio" id="l5" name="lugar" value="5" /><label for="l5"></label>
+                            <input type="radio" id="l4" name="lugar" value="4" /><label for="l4"></label>
+                            <input type="radio" id="l3" name="lugar" value="3" /><label for="l3"></label>
+                            <input type="radio" id="l2" name="lugar" value="2" /><label for="l2"></label>
+                            <input type="radio" id="l1" name="lugar" value="1" /><label for="l1"></label>
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="block text-[10px] font-bold text-center text-slate uppercase tracking-widest">Atención de organizadores</label>
+                        <div class="star-rating" id="rating-atencion">
+                            <input type="radio" id="a5" name="atencion" value="5" /><label for="a5"></label>
+                            <input type="radio" id="a4" name="atencion" value="4" /><label for="a4"></label>
+                            <input type="radio" id="a3" name="atencion" value="3" /><label for="a3"></label>
+                            <input type="radio" id="a2" name="atencion" value="2" /><label for="a2"></label>
+                            <input type="radio" id="a1" name="atencion" value="1" /><label for="a1"></label>
+                        </div>
+                    </div>
+                    <textarea id="comentario" name="comentario" rows="2" class="w-full p-3 rounded-lg bg-navy border border-white/10 text-white text-sm focus:outline-none focus:border-brand-orange transition-all" placeholder="Comentario opcional..."></textarea>
+                    <button type="submit" id="survey-submit-button" class="w-full bg-brand-orange text-navy font-bold py-3 rounded-lg hover:scale-105 transition-transform shadow-lg shadow-brand-orange/20">Enviar Calificación</button>
+                </form>
+            </div>
+            <div id="survey-success-container" class="hidden text-center py-8">
+                <i data-lucide="check-circle" class="w-12 h-12 text-green-400 mx-auto mb-4"></i>
+                <h3 class="text-xl font-bold text-white mb-2">¡Muchas Gracias!</h3>
+                <p class="text-slate text-sm mb-6">Tu feedback es muy valioso.</p>
+                <button onclick="closeSurveyModal()" class="text-brand-orange text-sm font-bold">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Overlay (Hidden) -->
+    <div id="dashboardOverlay" class="fixed inset-0 bg-navy/98 z-[80] hidden overflow-y-auto p-6 sm:p-12">
+        <div class="max-w-4xl mx-auto">
+            <div class="flex justify-between items-center mb-10">
+                <h2 class="text-3xl font-black text-white flex items-center gap-3">
+                    <i data-lucide="layout-dashboard" class="text-brand-cyan"></i> DASHBOARD 2026
+                </h2>
+                <button onclick="toggleDashboard()" class="text-slate hover:text-white transition-colors">
+                    <i data-lucide="x" class="w-8 h-8"></i>
+                </button>
+            </div>
+
+            <div class="dashboard-grid mb-8">
+                <div class="bg-light-navy p-6 rounded-2xl border border-white/5 text-center">
+                    <div class="text-xs text-slate uppercase tracking-widest mb-1">Inscritos</div>
+                    <div id="dash-inscritos" class="text-4xl font-black text-white">--</div>
+                </div>
+                <div class="bg-light-navy p-6 rounded-2xl border border-white/5 text-center">
+                    <div class="text-xs text-brand-orange uppercase tracking-widest mb-1">Asistencia</div>
+                    <div id="dash-presentes" class="text-4xl font-black text-white">--</div>
+                    <div id="dash-asistencia-per" class="text-[10px] text-slate mt-1">--%</div>
+                </div>
+                <div class="bg-light-navy p-6 rounded-2xl border border-white/5 text-center">
+                    <div class="text-xs text-brand-cyan uppercase tracking-widest mb-1">Satisfacción</div>
+                    <div id="dash-satisfaccion" class="text-4xl font-black text-white">--</div>
+                </div>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="bg-light-navy p-6 rounded-2xl border border-white/5">
+                    <h4 class="text-white font-bold mb-4 text-sm">Detalle Ratings</h4>
+                    <div class="space-y-4">
+                        <div>
+                            <div class="flex justify-between text-[10px] mb-1"><span class="text-slate">Speaker</span><span id="val-speaker" class="text-brand-cyan">--</span></div>
+                            <div class="w-full h-1 bg-white/5 rounded-full"><div id="bar-speaker" class="h-full bg-brand-cyan" style="width: 0%"></div></div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-[10px] mb-1"><span class="text-slate">Lugar</span><span id="val-lugar" class="text-brand-cyan">--</span></div>
+                            <div class="w-full h-1 bg-white/5 rounded-full"><div id="bar-lugar" class="h-full bg-brand-cyan" style="width: 0%"></div></div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-[10px] mb-1"><span class="text-slate">Atención</span><span id="val-atencion" class="text-brand-cyan">--</span></div>
+                            <div class="w-full h-1 bg-white/5 rounded-full"><div id="bar-atencion" class="h-full bg-brand-cyan" style="width: 0%"></div></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-light-navy p-6 rounded-2xl border border-white/5">
+                    <h4 class="text-white font-bold mb-4 text-sm">Feedback Reciente</h4>
+                    <div id="dash-comments" class="space-y-2 max-h-[150px] overflow-y-auto pr-2 text-xs text-slate italic"></div>
+                </div>
+            </div>
+            <button onclick="refreshDashboard()" class="mt-8 w-full py-3 bg-brand-cyan/10 border border-brand-cyan/20 text-brand-cyan font-bold rounded-xl flex items-center justify-center gap-2">
+                <i data-lucide="refresh-cw" class="w-4 h-4"></i> Actualizar
             </button>
         </div>
     </div>
@@ -335,6 +483,90 @@
                 setTimeout(() => {
                     youtubeAlertModal.classList.add('hidden');
                 }, 300);
+            }
+
+            // --- SURVEY & DASHBOARD LOGIC ---
+            const surveyModal = document.getElementById('surveyModal');
+            const surveyModalContent = document.getElementById('surveyModalContent');
+            const surveyForm = document.getElementById('survey-form');
+            const surveySubmitBtn = document.getElementById('survey-submit-button');
+
+            window.openSurveyModal = function() {
+                document.getElementById('survey-form-container').classList.remove('hidden');
+                document.getElementById('survey-success-container').classList.add('hidden');
+                surveyForm.reset();
+                surveyModal.classList.remove('hidden');
+                setTimeout(() => {
+                    surveyModal.classList.remove('opacity-0');
+                    surveyModalContent.classList.remove('scale-95');
+                    surveyModalContent.classList.add('scale-100');
+                }, 10);
+            }
+
+            window.closeSurveyModal = function() {
+                surveyModal.classList.add('opacity-0');
+                surveyModalContent.classList.remove('scale-100');
+                surveyModalContent.classList.add('scale-95');
+                setTimeout(() => {
+                    surveyModal.classList.add('hidden');
+                }, 300);
+            }
+
+            surveyForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const formData = new FormData(surveyForm);
+                formData.append('type', 'survey');
+                surveySubmitBtn.disabled = true;
+                surveySubmitBtn.textContent = 'Enviando...';
+
+                fetch(SCRIPT_URL, { method: 'POST', body: formData })
+                .then(res => res.text())
+                .then(data => {
+                    if (data.trim() === 'SUCCESS_SURVEY') {
+                        document.getElementById('survey-form-container').classList.add('hidden');
+                        document.getElementById('survey-success-container').classList.remove('hidden');
+                        lucide.createIcons();
+                    }
+                })
+                .finally(() => {
+                    surveySubmitBtn.disabled = false;
+                    surveySubmitBtn.textContent = 'Enviar Calificación';
+                });
+            });
+
+            // Admin & Direct Links
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('admin') === 'true') {
+                document.getElementById('dashboardOverlay').classList.remove('hidden');
+                refreshDashboard();
+            }
+            if (urlParams.get('survey') === 'true') {
+                setTimeout(openSurveyModal, 1000);
+            }
+
+            window.toggleDashboard = function() {
+                document.getElementById('dashboardOverlay').classList.toggle('hidden');
+            }
+
+            window.refreshDashboard = function() {
+                const icon = document.querySelector('[onclick="refreshDashboard()"] i');
+                icon.classList.add('animate-spin');
+                fetch(`${SCRIPT_URL}?action=getDashboardData`)
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('dash-inscritos').textContent = data.inscritos;
+                    document.getElementById('dash-presentes').textContent = data.presentes;
+                    document.getElementById('dash-asistencia-per').textContent = data.inscritos > 0 ? (data.presentes/data.inscritos*100).toFixed(0)+'%' : '0%';
+                    document.getElementById('dash-satisfaccion').textContent = data.avgSpeaker || '--';
+                    document.getElementById('val-speaker').textContent = data.avgSpeaker + '/5.0';
+                    document.getElementById('bar-speaker').style.width = (data.avgSpeaker/5*100)+'%';
+                    document.getElementById('val-lugar').textContent = data.avgLugar + '/5.0';
+                    document.getElementById('bar-lugar').style.width = (data.avgLugar/5*100)+'%';
+                    document.getElementById('val-atencion').textContent = data.avgAtencion + '/5.0';
+                    document.getElementById('bar-atencion').style.width = (data.avgAtencion/5*100)+'%';
+                    document.getElementById('dash-comments').innerHTML = data.comments.map(c => `<div class="bg-white/5 p-2 rounded mb-2">"${c}"</div>`).join('') || 'Sin comentarios';
+                })
+                .finally(() => icon.classList.remove('animate-spin'));
             }
         });
     </script>
